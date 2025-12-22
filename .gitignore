@@ -1,0 +1,30 @@
+# --- Python Specific ---
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+env/
+
+# --- Environment & Credentials ---
+.env
+.flaskenv
+# If your db.py uses a hardcoded config or secret file
+secrets.json
+
+# --- Media & Storage ---
+# We ignore the actual PDF files but keep the folder structure
+static/part/*
+# Exception: keep the folder even if empty
+!static/part/.gitkeep
+
+# --- IDEs & Editors ---
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# --- OS Specific ---
+.DS_Store
+Thumbs.db
