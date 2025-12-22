@@ -1,10 +1,13 @@
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException
 from fastapi.responses import FileResponse
+from fastapi.middleware.cors import CORSMiddleware
 from app import models, services
 import os
 
 
 app = FastAPI(title="Machine & Parts Management System")
+app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
+
 
 
 # ---------- 1. Part Endpoints ----------
