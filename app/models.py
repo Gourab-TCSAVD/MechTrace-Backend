@@ -8,8 +8,8 @@ class PartBase(BaseModel):
     description: Optional[str] = None
 
 class PartResponse(PartBase):
-    uuid: str  # We use 'uuid' as the field name to match the DB property
-    model_config = ConfigDict(from_attributes=True)
+    uuid: str
+    linked_machine: str | None = None  # Add this line
 
 
 # --- Machine Models ---

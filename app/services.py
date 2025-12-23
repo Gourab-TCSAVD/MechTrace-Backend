@@ -161,10 +161,11 @@ def get_inventory_stats():
         result = session.run(query)
         record = result.single()
         return {
-            "total_machines": record["machineCount"], # type: ignore
-            "total_parts": record["partCount"], # type: ignore
-            "unlinked_parts": record["unlinkedCount"], # type: ignore
+            "total_machines": record["machineCount"],  # type: ignore
+            "total_parts": record["partCount"],  # type: ignore
+            "unlinked_parts": record["unlinkedCount"],  # type: ignore
         }
+
 
 # ---------- 6. Get Parts based on machine and site ----------
 def get_machine_with_parts(name: str, site: str):
@@ -196,8 +197,48 @@ def get_machine_with_parts(name: str, site: str):
                     "uuid": p["uuid"],
                     "name": p["name"],
                     "number": p["number"],
-                    "description": p.get("description", "")
+                    "description": p.get("description", ""),
                 }
-                for p in parts_nodes if p is not None
-            ]
+                for p in parts_nodes
+                if p is not None
+            ],
         }
+
+
+# ---------- 7. Get All Parts ----------
+def get_all_parts(status: str = "all"):
+    # Using COALESCE or CASE ensures we always get a value (or None)
+    # and prevents the query from failing if m is null.
+    query = """
+    MATCH (p:Part)
+    OPTIONAL MATCH (p)-[:BELONGS_TO]->(m:Machine)
+    WITH p, m
+    """
+
+    # Apply filters in Cypher for better performance
+    if status == "linked":
+        query += " WHERE m IS NOT NULL"
+    elif status == "unlinked":
+        query += " WHERE m IS NULL"
+
+    # Return the machine name or null explicitly
+    query += " RETURN p, m.name AS machine_name"
+
+    with neo4j_connection.get_session() as session:
+        result = session.run(query)
+        parts = []
+        for record in result:
+            node = record["p"]
+            # Use .get() to avoid KeyErrors if properties are missing
+            parts.append(
+                {
+                    "uuid": node.get("uuid"),
+                    "name": node.get("name"),
+                    "number": node.get("number"),
+                    "description": node.get("description", ""),
+                    "linked_machine": record.get(
+                        "machine_name"
+                    ),  # Will be None if unlinked
+                }
+            )
+        return parts

@@ -1,3 +1,4 @@
+from typing import List
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException,Query
 from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -51,6 +52,25 @@ async def get_part_drawing(part_uuid: str):
         headers={"Content-Disposition": "inline"}, #remove if we want the file to directly download
     )
 
+@app.get("/parts/", response_model=List[models.PartResponse], tags=["Parts"])
+async def list_parts(
+    status: str = Query(
+        "all", 
+        enum=["all", "linked", "unlinked"], 
+        description="Filter parts by their connection to a machine"
+    )
+):
+    """
+    Retrieve all parts with an optional filter:
+    - **all**: Every part in the database.
+    - **linked**: Only parts associated with a machine.
+    - **unlinked**: Only parts not yet associated with a machine.
+    """
+    try:
+        parts = services.get_all_parts(status)
+        return parts
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 # ---------- 2. Machine Endpoints ----------
 @app.post("/machines/", response_model=models.MachineResponse, tags=["Machines"])
