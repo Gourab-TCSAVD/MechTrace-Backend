@@ -60,8 +60,6 @@ async def create_machine(machine: models.MachineBase):
 
 
 # ---------- 3. Relationship Endpoints ----------
-
-
 @app.post("/machines/associate", tags=["Relationships"])
 async def associate_part_with_machine(machine_name: str, part_number: str):
     """
@@ -72,8 +70,12 @@ async def associate_part_with_machine(machine_name: str, part_number: str):
 
 
 # ---------- 4. Health Check ----------
-
-
 @app.get("/", tags=["System"])
 async def root():
     return {"message": "Neo4j Machine-Parts API is running"}
+
+# ---------- 5. Inventory Stats ----------
+@app.get("/inventory/stats", tags=["System"])
+async def get_stats():
+    return services.get_inventory_stats()
+
