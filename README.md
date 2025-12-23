@@ -1,38 +1,52 @@
 # Machine & Parts Management System API
 
-This project is a FastAPI-based backend for managing machines and parts, using Neo4j as the database to store machines, parts, and their relationships. It supports PDF uploads for part drawings, machine–part linking, and inventory statistics.
+This project is a **FastAPI-based backend** for managing machines and parts, using **Neo4j** as the database to store machines, parts, and their relationships.  
+It supports:
+
+- PDF uploads for part drawings
+- Machine–part linking
+- Inventory statistics
 
 ---
 
-## Tech Stack
+## **Tech Stack**
 
-- **FastAPI** – Backend framework
-- **Neo4j** – Graph database
-- **Pydantic** – Data validation
-- **Uvicorn** – ASGI server
-- **Python Dotenv** – Environment variable management
+- **FastAPI** – Backend framework  
+- **Neo4j** – Graph database  
+- **Pydantic** – Data validation  
+- **Uvicorn** – ASGI server  
+- **python-dotenv** – Environment variable management  
+
+---
+
+## **Prerequisites**
+
+- Python **3.8+**  
+- Neo4j  
+- Git  
 
 ---
 
-## Prerequisites
+## **Neo4j Database Setup**
 
-- Python **3.8+**
-- Neo4j
-- Git
+1. Install **Neo4j Desktop**  
+2. Create a new instance  
+3. Start the database  
+4. Note the **URI**, **username**, and **password**  
+5. Create a `.env` file in the project root with the following variables:
 
----
-## Neo4j Database Setup
-
-- Install Neo4j Desktop
-- Create a new Instance
-- Start the database
-- Note the URI, username, and password
-- Create a .env file in the project root:
-**NEO4J_URI=bolt://localhost:7687**
-**NEO4J_USER=neo4j**
-**NEO4J_PASSWORD=password**
+```
+NEO4J_URI=bolt://localhost:7687
+NEO4J_USER=neo4j
+NEO4J_PASSWORD=password
+```
 
 ---
-## Starting the application
 
-**uvicorn app.main:app --reload**
+## **Starting the Application**
+
+Run the following command:
+
+```
+uvicorn app.main:app --reload
+```
