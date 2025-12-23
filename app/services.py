@@ -165,3 +165,39 @@ def get_inventory_stats():
             "total_parts": record["partCount"], # type: ignore
             "unlinked_parts": record["unlinkedCount"], # type: ignore
         }
+
+# ---------- 6. Get Parts based on machine and site ----------
+def get_machine_with_parts(name: str, site: str):
+    # This query finds the machine and collects all related parts into a list
+    query = """
+    MATCH (m:Machine {name: $name, site: $site})
+    OPTIONAL MATCH (p:Part)-[:BELONGS_TO]->(m)
+    RETURN m, collect(p) as parts
+    """
+    params = {"name": name, "site": site}
+
+    with neo4j_connection.get_session() as session:
+        result = session.run(query, params)
+        record = result.single()
+
+        if not record or not record["m"]:
+            return None
+
+        machine_node = record["m"]
+        parts_nodes = record["parts"]
+
+        return {
+            "uuid": machine_node["uuid"],
+            "name": machine_node["name"],
+            "site": machine_node["site"],
+            "description": machine_node.get("description", ""),
+            "parts": [
+                {
+                    "uuid": p["uuid"],
+                    "name": p["name"],
+                    "number": p["number"],
+                    "description": p.get("description", "")
+                }
+                for p in parts_nodes if p is not None
+            ]
+        }

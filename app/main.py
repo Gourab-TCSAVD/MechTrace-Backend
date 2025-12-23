@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, File, Form, HTTPException
+from fastapi import FastAPI, UploadFile, File, Form, HTTPException,Query
 from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from app import models, services
@@ -57,6 +57,22 @@ async def get_part_drawing(part_uuid: str):
 async def create_machine(machine: models.MachineBase):
     """Create a new machine record."""
     return services.create_machine(machine)
+
+@app.get("/machines/details", tags=["Machines"])
+async def get_machine_details(
+    name: str = Query(..., description="Name of the machine"),
+    site: str = Query(..., description="Site location of the machine")
+):
+    """
+    Fetch a machine by name and site, including all its associated parts.
+    """
+    data = services.get_machine_with_parts(name, site)
+    if not data:
+        raise HTTPException(
+            status_code=404, 
+            detail=f"Machine '{name}' at site '{site}' not found."
+        )
+    return data
 
 
 # ---------- 3. Relationship Endpoints ----------
