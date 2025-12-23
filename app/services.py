@@ -242,3 +242,24 @@ def get_all_parts(status: str = "all"):
                 }
             )
         return parts
+
+# ---------- 8. Get All Machines (with Part Counts) ----------
+def get_all_machines():
+    query = """
+    MATCH (m:Machine)
+    OPTIONAL MATCH (p:Part)-[:BELONGS_TO]->(m)
+    RETURN m, count(p) as part_count
+    """
+    with neo4j_connection.get_session() as session:
+        result = session.run(query)
+        machines = []
+        for record in result:
+            node = record["m"]
+            machines.append({
+                "uuid": node["uuid"],
+                "name": node["name"],
+                "site": node["site"],
+                "description": node.get("description", ""),
+                "part_count": record["part_count"]
+            })
+        return machines

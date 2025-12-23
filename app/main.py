@@ -94,6 +94,10 @@ async def get_machine_details(
         )
     return data
 
+@app.get("/machines/", response_model=list[dict], tags=["Machines"])
+async def list_machines():
+    """List all machines with their basic details and part counts."""
+    return services.get_all_machines()
 
 # ---------- 3. Relationship Endpoints ----------
 @app.post("/machines/associate", tags=["Relationships"])
